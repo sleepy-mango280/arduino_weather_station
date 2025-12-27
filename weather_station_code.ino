@@ -3,39 +3,31 @@
 #include <DHT.h>
 #include <SD.h>
 
-// ============= LCD =================
-LiquidCrystal_I2C lcd(0x27, 20, 4);  // 20x4 LCD at I2C addr 0x27
+LiquidCrystal_I2C lcd(0x27, 20, 4);  
 
-// ============= DHT22 ================
 #define DHTPIN 53        // DHT22 Data pin
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
 
-// ============= MQ-2 ================
 #define MQ2_AO A0
 #define MQ2_DO 44
 
-// ============= LDR =================
 #define LDR_AO A2
 #define LDR_DO 45
 
-// ============= SD Card =============
 #define SD_CS 49
 File logFile;
 
 void setup() {
   Serial.begin(9600);
 
-  // LCD setup
   lcd.init();
   lcd.backlight();
   lcd.setCursor(0, 0);
   lcd.print("Weather Station");
 
-  // Start DHT
   dht.begin();
 
-  // Start SD
   if (!SD.begin(SD_CS)) {
     lcd.setCursor(0, 1);
     lcd.print("SD Init Fail!");
@@ -50,19 +42,15 @@ void setup() {
 }
 
 void loop() {
-  // ==== DHT22 ====
   float temp = dht.readTemperature();
   float hum  = dht.readHumidity();
 
-  // ==== MQ-2 ====
   int mq2_analog = analogRead(MQ2_AO);
   int mq2_digital = digitalRead(MQ2_DO);
 
-  // ==== LDR ====
   int ldr_analog = analogRead(LDR_AO);
   int ldr_digital = digitalRead(LDR_DO);
 
-  // ==== LCD Output ====
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("T:");
@@ -88,7 +76,6 @@ void loop() {
   lcd.setCursor(0, 3);
   lcd.print("Logging...");
 
-  // ==== SD Logging ====
   logFile = SD.open("weather.txt", FILE_WRITE);
   if (logFile) {
     logFile.print("Temp=");
@@ -108,5 +95,5 @@ void loop() {
     Serial.println("Error opening weather.txt");
   }
 
-  delay(2000); // log every 2s
+  delay(2000); 
 }
